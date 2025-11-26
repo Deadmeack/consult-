@@ -1,9 +1,17 @@
 from abc import ABC, abstractmethod
 
 class UsuarioBase(ABC):
-    def __init__(self, CPF, contato):
+    def __init__(self, id, nome, CPF, contato, endereco, data_nasc, senha, email):
+        super().__init__(CPF, contato)
+        self._id= id
+        self._nome = nome
+        self._endereco = endereco
+        self._data_nasc = data_nasc
+        self._senha = senha
+        self._email = email
         self._CPF = CPF
         self._contato = contato
+        
 
     
     @property

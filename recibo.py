@@ -2,14 +2,13 @@ from abc import ABC, abstractmethod
 from pagamento import Pagamento
 from consulta import Consulta
 
-class Recibo():
-    def __init__(self, id_pagamento, pagamento, id_consulta, valor, metodo, data_emissao):
-        super().__init__(id_pagamento, pagamento, id_consulta)
+class Recibo(Pagamento, Consulta):
+    def __init__(self, id_pagamento, id_consulta, valor, metodo, data_emissao):
+        Pagamento.__init__(self, id_pagamento, None, valor, metodo)
+        Consulta.__init__(self, id_consulta, None, None, None, None)
         self._data_emissao = data_emissao
         self._valor = valor
         self._metodo = metodo
-
-
  
     @property
     def data_emissao(self):

@@ -1,20 +1,24 @@
 from usuariobase import UsuarioBase
 from abc import ABC, abstractmethod
+import json
+import os
 
-class Paciente(UsuarioBase):
-    def __init__(self, id_paciente, nome_paciente, CPF, contato, endereco, idade, senha):
-        super().__init__(CPF, contato)
+
+class Paciente(UsuarioBase, ABC):
+    def __init__(self, id_paciente, nome_paciente, CPF, contato, endereco, data_nasc, senha, email, consulta="consultas.json"):
+        super().__init__(CPF, contato, endereco, data_nasc, senha, email)
         self._id_paciente = id_paciente
         self._nome_paciente = nome_paciente
-        self._endereco = endereco
-        self._idade = idade
-        self._senha = senha
+        self._consulta = consulta
+        self.consultas = []
+        self._carregar_consultas()
+        
 
     @property
-    def nome(self):
+    def nome_paciente(self):
         return self._nome_paciente
-    @nome.setter
-    def nome(self, nome_paciente):
+    @nome_paciente.setter
+    def nome_paciente(self, nome_paciente):
         self._nome_paciente = nome_paciente
 
     @property
@@ -23,7 +27,6 @@ class Paciente(UsuarioBase):
     @id_paciente.setter
     def id_paciente(self, id_paciente):
         self._id_paciente = id_paciente
-
     @property
     def endereco(self):
         return self._endereco
@@ -47,16 +50,16 @@ class Paciente(UsuarioBase):
 
     def Cadastrar(self):
         print("---- Cadastro Cliente ----")
-        nome = input("Nome: ")
-        CPF = input("CPF: ")
-        contato = input("Contato: ")
-        endereco = input("Endereço: ")
-        idade = input("Idade: ")
-        self._nome_paciente = nome
-        self._CPF = CPF
-        self._contato = contato
-        self._endereco = endereco
-        self._idade = idade
+        nome_paciente = input("Nome: ")
+        CPF_paciente = input("CPF: ")
+        contato_paciente = input("Contato: ")
+        endereco_paciente = input("Endereço: ")
+        data_nasc_paciente = input("Idade: ")
+        self._nome_paciente = nome_paciente
+        self._CPF = CPF_paciente
+        self._contato = contato_paciente
+        self._endereco = endereco_paciente
+        self._data_nasc = data_nasc_paciente
         print("-------------------------------")
         print("Cadastro realizado com sucesso!\n")
         print("Dados do Cliente:\n")
@@ -101,3 +104,31 @@ class Paciente(UsuarioBase):
             print(f"Consulta com ID {id_consulta} reagendada para {nova_data} às {nova_hora}.")
         else:
             print(f"Nenhuma consulta encontrada com o ID {id_consulta}.")
+    
+    def atualizar(self, indice, **kwargs):
+        try:
+            self.consultas[indice].atualizar(**kwargs)
+            self.salvar()
+        except IndexError:
+            print("Produto não encontrado.")
+
+    def deletar(self, indice):
+        try:
+            self.consultas.pop(indice)
+            self.salvar()
+        except IndexError:
+            print("Produto não encontrado.")
+
+    def salvar(self):
+        dados = [p.to_dict() for p in self.consultas]
+        with open(self._consulta, "w", encoding="utf-8") as f:
+            json.dump(dados, f, indent=4, ensure_ascii=False)
+
+    def carregar(self):
+        if os.path.exists(self._consulta):
+            with open(self._consulta, "r", encoding="utf-8") as f:
+                try:
+                    dados = json.load(f)
+                    self.consultas = [consulta.from_dict(d) for d in dados]
+                except json.JSONDecodeError:
+                    self.consultas = []
