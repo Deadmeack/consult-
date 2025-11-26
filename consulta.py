@@ -1,5 +1,5 @@
-from paciente import Paciente
-from medico import Medico
+from modails.paciente import Paciente
+from modails.medico import Medico
 import json
 import os
 

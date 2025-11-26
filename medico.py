@@ -1,13 +1,18 @@
-from usuariobase import UsuarioBase
+from modails.usuariobase import UsuarioBase
 from abc import ABC, abstractmethod
 import json
 import os
 
 
 class Medico(UsuarioBase, ABC):
-    def __init__(self, id_medico, nome_medico, CPF, contato, endereco, data_nasc, senha, email, CRM, especialidade, consulta="consultas.json"):
-        super().__init__(CPF, contato, endereco, data_nasc, senha, email)
-        self._id_medico = id_medico
+    contador = 0
+    
+    def __init__(self, nome_medico, CPF, contato, senha, CRM, especialidade, consulta="consultas.json"):
+        # Usuário médico pode não fornecer endereco/data_nasc/email no cadastro rápido;
+        # repassa placeholders para o construtor base para evitar erros de assinatura.
+        super().__init__(CPF, contato, None, None, senha, None)
+        Medico.contador += 1
+        self._id_medico = Medico.contador
         self._nome_medico = nome_medico
         self._consulta = consulta
         self._CRM = CRM
@@ -48,10 +53,10 @@ class Medico(UsuarioBase, ABC):
     def Cadastrar(self):
         print("---- Cadastro Médico ----")
         nome_medico = input("Nome: ")
-        CPF_medico = input("CPF: ")
-        contato_medico = input("Contato: ")
+        CPF_medico = int(input("CPF: "))
+        contato_medico = int(input("Contato: "))
         especialidade = input("Especialidade: ")
-        CRM = input("CRM: ")
+        CRM = int(input("CRM: "))
         self._nome_medico = nome_medico
         self._CPF = CPF_medico
         self._contato = contato_medico
@@ -60,14 +65,14 @@ class Medico(UsuarioBase, ABC):
         print("-------------------------------")
         print("Cadastro realizado com sucesso!\n")
         print("Dados do Médico:\n")
-        print(f"Nome: {self._nome_medico}\nCPF: {self._CPF}\nContato: {self._contato}\nEspecialidade: {self._especialidade}\nCRM: {self._CRM}")
+        print(f"ID: {self._id_medico}\nNome: {self._nome_medico}\nCPF: {self._CPF}\nContato: {self._contato}\nEspecialidade: {self._especialidade}\nCRM: {self._CRM}")
         print("-------------------------------")
     
     def Autenticar(self):
         print("---- Autenticação Médico ----")
-        nome_medico = input("Nome: ")
+        id_medico = int(input("ID: "))
         CRM = input("CRM: ")
-        if nome_medico == self._nome_medico and CRM == self._CRM:
+        if id_medico == self._id_medico and CRM == self._CRM:
             print("Autenticação bem-sucedida!")
             return True
         else:
@@ -99,14 +104,15 @@ class Medico(UsuarioBase, ABC):
 
     def salvar(self):
         dados = [p.to_dict() for p in self.consultas]
-        with open(self.consulta, "w", encoding="utf-8") as f:
+        with open(self._consulta, "w", encoding="utf-8") as f:
             json.dump(dados, f, indent=4, ensure_ascii=False)
-
-    def carregar(self):
+    def _carregar_consultas(self):
         if os.path.exists(self._consulta):
-            with open(self.consulta, "r", encoding="utf-8") as f:
+            with open(self._consulta, "r", encoding="utf-8") as f:
                 try:
                     dados = json.load(f)
-                    self.consultas = [consulta.from_dict(d) for d in dados]
+                    # armazena os dados brutos (dicionários). Para desserializar em objetos,
+                    # implemente Consulta.from_dict e ajuste aqui para usar essa função.
+                    self.consultas = dados
                 except json.JSONDecodeError:
                     self.consultas = []

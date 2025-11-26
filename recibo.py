@@ -1,47 +1,49 @@
-from abc import ABC, abstractmethod
-from pagamento import Pagamento
-from consulta import Consulta
+from datetime import datetime
+import uuid
 
-class Recibo(Pagamento, Consulta):
-    def __init__(self, id_pagamento, id_consulta, valor, metodo, data_emissao):
-        Pagamento.__init__(self, id_pagamento, None, valor, metodo)
-        Consulta.__init__(self, id_consulta, None, None, None, None)
-        self._data_emissao = data_emissao
+
+class Recibo:
+    def __init__(self, id_recibo=None, id_pagamento=None, id_consulta=None, valor=None, metodo=None, data_emissao=None, paciente=None, medico=None):
+        # gera id_recibo se não fornecido
+        self._id_recibo = id_recibo or str(uuid.uuid4())
+        self._id_pagamento = id_pagamento
+        self._id_consulta = id_consulta
         self._valor = valor
         self._metodo = metodo
- 
-    @property
-    def data_emissao(self):
-        return self._data_emissao
-    @property
-    def valor(self):
-        return self._valor
-    @property
-    def metodo(self):
-        return self._metodo
-   
-    @data_emissao.setter
-    def data_emissao(self, data_emissao):
-        self._data_emissao = data_emissao
-    @valor.setter
-    def valor(self, valor):
-        self._valor = valor
-    @metodo.setter
-    def metodo(self, metodo):
-        self._metodo = metodo
+        # gera data_emissao se não fornecida
+        self._data_emissao = data_emissao or datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        # paciente/medico podem ser strings, dicionários ou objetos; aceitamos ambos
+        self.paciente = paciente
+        self.medico = medico
 
     def Gerar_Recibo(self):
-        # Retorna uma string formatada com os detalhes do pagamento e da consulta
+        paciente_nome = None
+        medico_nome = None
+        # tenta extrair nomes se objetos forem passados
+        if isinstance(self.paciente, dict):
+            paciente_nome = self.paciente.get('nome') or self.paciente.get('nome_paciente')
+        elif self.paciente is not None:
+            paciente_nome = getattr(self.paciente, 'nome', None) or getattr(self.paciente, 'nome_paciente', None)
+
+        if isinstance(self.medico, dict):
+            medico_nome = self.medico.get('nome') or self.medico.get('nome_medico')
+        elif self.medico is not None:
+            medico_nome = getattr(self.medico, 'nome', None) or getattr(self.medico, 'nome_medico', None)
+
+        paciente_nome = paciente_nome or 'N/A'
+        medico_nome = medico_nome or 'N/A'
+
         return (
             "\n*** RECIBO DE PAGAMENTO ***"
-            f"\nData de Emissão: {self.data_emissao}"
-            f"\nID da Transação: {id(self.id_pagamento)}"
+            f"\nData de Emissão: {self._data_emissao}"
+            f"\nID Recibo: {self._id_recibo}"
+            f"\nID Pagamento: {self._id_pagamento}"
+            f"\nID Consulta: {self._id_consulta}"
             f"\n-----------------------------"
-            f"\nPaciente: {self.nome_paciente}"
-            f"\nMédico: Dr(a). {self.nome_medico}"
-            f"\nConsulta (Data/Hora): {self.pagamento.consulta.data} às {self.pagamento.consulta.hora}"
+            f"\nPaciente: {paciente_nome}"
+            f"\nMédico: {medico_nome}"
             f"\n-----------------------------"
-            f"\nValor Pago: R$ {self.valor:.2f}"
-            f"\nMétodo de Pagamento: {self.metodo}"
+            f"\nValor Pago: R$ {self._valor if self._valor is not None else 0:.2f}"
+            f"\nMétodo de Pagamento: {self._metodo or 'N/A'}"
             "\n*****************************\n"
         )

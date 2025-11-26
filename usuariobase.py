@@ -1,18 +1,13 @@
 from abc import ABC, abstractmethod
 
 class UsuarioBase(ABC):
-    def __init__(self, id, nome, CPF, contato, endereco, data_nasc, senha, email):
-        super().__init__(CPF, contato)
-        self._id= id
-        self._nome = nome
+    def __init__(self, CPF, contato, endereco, data_nasc, senha, email):
         self._endereco = endereco
         self._data_nasc = data_nasc
         self._senha = senha
         self._email = email
         self._CPF = CPF
         self._contato = contato
-        
-
     
     @property
     def CPF(self):
@@ -26,6 +21,27 @@ class UsuarioBase(ABC):
     @contato.setter
     def contato(self, contato):
         self._contato = contato
+    @property
+    def endereco(self):
+        return self._endereco
+    @endereco.setter
+    def endereco(self, endereco):
+        self._endereco = endereco
+    @property
+    def data_nasc(self):
+        return self._data_nasc
+    @data_nasc.setter
+    def data_nasc(self, data_nasc):
+        self._data_nasc = data_nasc
+    @property
+    def senha(self):
+        return self._senha
+    @senha.setter
+    def senha(self, senha):
+        self._senha = senha
+    @property
+    def email(self):
+        return self._email
 
     @abstractmethod
     def Cadastrar(self):
@@ -35,21 +51,6 @@ class UsuarioBase(ABC):
     def Autenticar(self):
         pass
 
-    @abstractmethod
-    def Agendar_Consulta(self):
-        pass
-    @abstractmethod
-    def Ver_Agenda(self):
-        pass
-    @abstractmethod
-    def Cancelar_Consulta(self):
-        pass
-    @abstractmethod
-    def Listar_Consultas(self):
-        pass
-    @abstractmethod
-    def Reagendar_Consulta(self):
-        pass
 
    
     
