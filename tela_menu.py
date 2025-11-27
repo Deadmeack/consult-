@@ -1,115 +1,85 @@
 import tkinter as tk
-from tkinter import font
 
-def criar_tela_navegacao():
-    # 1. Configuração da Janela Principal
-    root = tk.Tk()
-    root.title("Consult+ - Navegação")
-    
-    # Definir um tamanho fixo (aproximado)
-    LARGURA = 800
-    ALTURA = 550
-    root.geometry(f'{LARGURA}x{ALTURA}')
-    root.resizable(False, False)
+# Paleta de cores
+COR_FUNDO = "#D0E6F7"  # azul suave
+COR_TEXTO = "#333333"
+COR_BOTAO = "#1E90FF"
+COR_BOTAO_HOVER = "#2ECC71"
+COR_ICONO = "#FFFFFF"
 
-    # --- Definições de Cores e Fontes ---
-    COR_FUNDO_PRINCIPAL = '#576f7c' # Azul-cinzento escuro
-    COR_BORDA_BRANCA = '#e0e0e0'    # Borda fina clara
-    COR_BOTAO_FUNDO = '#e9e6e4'      # Fundo bege/rosado claro
-    COR_TEXTO_PADRAO = '#2c3e50'    # Texto escuro
-    COR_ICONE_CORACAO = '#b0e0e6'   # Azul claro (Coração)
-    
-    # Configurar o fundo da janela
-    root.configure(bg=COR_FUNDO_PRINCIPAL)
+# Funções dos botões
+def agendar():
+    print("Agendar Consulta")
 
-    # Fontes
-    fonte_titulo = font.Font(family='Times New Roman', size=52, weight='normal')
-    fonte_botao = font.Font(family='Helvetica', size=14, weight='bold')
+def cancelar():
+    print("Cancelar Consulta")
 
-    # 2. Borda Externa (Canvas para desenhar o retângulo)
-    canvas_borda = tk.Canvas(root, width=LARGURA - 40, height=ALTURA - 40, 
-                             bg=COR_FUNDO_PRINCIPAL, highlightthickness=1, highlightbackground=COR_BORDA_BRANCA)
-    canvas_borda.place(x=20, y=20)
+def reagendar():
+    print("Reagendar Consulta")
 
-    # 3. Cabeçalho
-    
-    # Título Principal
-    lbl_titulo = tk.Label(root, text="Consult", font=fonte_titulo, fg=COR_TEXTO_PADRAO, bg=COR_FUNDO_PRINCIPAL)
-    lbl_titulo.place(relx=0.5, rely=0.2, anchor='e') # Coloca a primeira parte à esquerda do centro
-    
-    # Símbolo "+"
-    lbl_plus = tk.Label(root, text="+", font=('Times New Roman', 32, 'normal'), fg=COR_TEXTO_PADRAO, bg=COR_FUNDO_PRINCIPAL)
-    lbl_plus.place(relx=0.5, rely=0.19, anchor='w') # Posiciona após o título
+def minha_agenda():
+    print("Minha Agenda")
 
-    # Ícone do Coração (Placeholder com caractere Unicode)
-    lbl_coracao = tk.Label(root, text="💙", font=('Arial', 32), fg=COR_ICONE_CORACAO, bg=COR_FUNDO_PRINCIPAL)
-    lbl_coracao.place(relx=0.5, rely=0.2, anchor='w', x=30) # Posiciona após o "+"
+def on_enter(event):
+    event.widget.configure(bg=COR_BOTAO_HOVER)
 
-    # Ícone do Usuário (Placeholder com caractere Unicode em um círculo)
-    # Usaremos um Canvas para o círculo e um Label para o ícone
-    canvas_user = tk.Canvas(root, width=50, height=50, bg=COR_FUNDO_PRINCIPAL, highlightthickness=0)
-    canvas_user.create_oval(0, 0, 50, 50, fill='#ffe0b2', outline='#f0e68c') # Simula o círculo da foto
-    canvas_user.place(relx=0.9, rely=0.15, anchor='center')
-    lbl_user = tk.Label(root, text="👤", font=('Arial', 24), bg='#ffe0b2') # Ícone sobre a cor da pele
-    lbl_user.place(relx=0.9, rely=0.15, anchor='center')
-    
-    # 4. Botões de Ação (Grid 2x2 simulado com place)
-    
-    # Dimensões e Posições
-    LARGURA_BOTAO = 300
-    ALTURA_BOTAO = 70
-    CENTRO_X = LARGURA // 2
-    CENTRO_Y = ALTURA // 2
-    ESPACAMENTO = 50
-    
-    # Posições Calculadas para o Grid
-    x1 = CENTRO_X - LARGURA_BOTAO // 2 - ESPACAMENTO // 2 # Esquerda
-    x2 = CENTRO_X + LARGURA_BOTAO // 2 + ESPACAMENTO // 2 # Direita
-    y1 = CENTRO_Y                                        # Linha 1
-    y2 = CENTRO_Y + ALTURA_BOTAO + ESPACAMENTO           # Linha 2
-    
-    # Função para criar um botão personalizado com ícone
-    def criar_botao_acao(texto, icone_char, x_pos, y_pos):
-        # Frame que simula o botão com fundo diferenciado
-        btn_frame = tk.Frame(root, width=LARGURA_BOTAO, height=ALTURA_BOTAO, bg=COR_BOTAO_FUNDO, 
-                             relief='flat', bd=0)
-        btn_frame.pack_propagate(False) # Impedir que o frame se ajuste ao conteúdo
-        
-        # Cria um Label para o ícone (à esquerda)
-        lbl_icone = tk.Label(btn_frame, text=icone_char, font=('Arial', 32), fg=COR_TEXTO_PADRAO, bg=COR_BOTAO_FUNDO)
-        lbl_icone.pack(side='left', padx=15)
-        
-        # Cria um Label para o texto (centralizado)
-        lbl_texto = tk.Label(btn_frame, text=texto, font=fonte_botao, fg=COR_TEXTO_PADRAO, bg=COR_BOTAO_FUNDO)
-        lbl_texto.pack(side='left', padx=5)
+def on_leave(event):
+    event.widget.configure(bg=COR_BOTAO)
 
-        # Usamos Place para posicionar o frame que contém o botão/ícone
-        btn_frame.place(x=x_pos, y=y_pos, anchor='center')
-        
-        # Adicionar funcionalidade (opcional)
-        btn_frame.bind("<Button-1>", lambda e: print(f"Ação: {texto}"))
-        for widget in btn_frame.winfo_children():
-            widget.bind("<Button-1>", lambda e: print(f"Ação: {texto}"))
+# Janela principal
+root = tk.Tk()
+root.title("Consult+ | Principal")
+root.configure(bg=COR_FUNDO)
+root.resizable(False, False)
 
-    # Ícones Placeholder (caracteres Unicode)
-    ICON_AGENDAR = "📅✅"
-    ICON_CANCELAR = "ⓧ"
-    ICON_REAGENDAR = "📅🔄"
-    ICON_MINHA_AGENDA = "🗓️"
+# Tamanho e centralização
+largura, altura = 420, 600
+x = (root.winfo_screenwidth() // 2) - (largura // 2)
+y = (root.winfo_screenheight() // 2) - (altura // 2)
+root.geometry(f"{largura}x{altura}+{x}+{y}")
 
-    # 4.1. Agendar Consulta
-    criar_botao_acao("Agendar Consulta", ICON_AGENDAR, CENTRO_X - (LARGURA_BOTAO/2 + 20), y1)
+# Topo: logo + avatar
+top_frame = tk.Frame(root, bg=COR_FUNDO)
+top_frame.pack(fill="x", pady=(20, 10), padx=20)
 
-    # 4.2. Cancelar Consulta
-    criar_botao_acao("Cancelar Consulta", ICON_CANCELAR, CENTRO_X + (LARGURA_BOTAO/2 + 20), y1)
-    
-    # 4.3. Reagendar Consulta
-    criar_botao_acao("Reagendar Consulta", ICON_REAGENDAR, CENTRO_X - (LARGURA_BOTAO/2 + 20), y2)
+# Logo em Canvas
+canvas = tk.Canvas(top_frame, width=100, height=100, bg=COR_FUNDO, highlightthickness=0)
+canvas.pack(side="left")
+canvas.create_oval(20, 20, 55, 55, fill=COR_BOTAO, outline=COR_BOTAO)
+canvas.create_oval(40, 20, 75, 55, fill=COR_BOTAO, outline=COR_BOTAO)
+canvas.create_polygon(20, 35, 75, 35, 47, 85, fill=COR_BOTAO, outline=COR_BOTAO)
+canvas.create_line(32, 58, 42, 68, fill=COR_FUNDO, width=4)
+canvas.create_line(42, 68, 65, 45, fill=COR_FUNDO, width=4)
+canvas.create_text(70, 25, text="+", font=("Arial", 16, "bold"), fill=COR_ICONO)
 
-    # 4.4. Minha Agenda
-    criar_botao_acao("Minha Agenda", ICON_MINHA_AGENDA, CENTRO_X + (LARGURA_BOTAO/2 + 20), y2)
+# Avatar (simulado como círculo)
+avatar = tk.Canvas(top_frame, width=50, height=50, bg=COR_FUNDO, highlightthickness=0)
+avatar.pack(side="right")
+avatar.create_oval(5, 5, 45, 45, fill="#AAAAAA", outline="#AAAAAA")
+avatar.create_text(25, 25, text="👤", font=("Arial", 18))
 
-    root.mainloop()
+# Título
+tk.Label(root, text="Consult+", font=("Arial Black", 24), bg=COR_FUNDO, fg=COR_TEXTO).pack(pady=(0, 30))
 
-if __name__ == "__main__":
-    criar_tela_navegacao()
+# Função para criar botões com ícones simulados
+def criar_botao(texto, emoji, comando):
+    btn = tk.Button(
+        root, text=f"{emoji}  {texto}",
+        font=("Arial", 12, "bold"),
+        bg=COR_BOTAO, fg="white",
+        activebackground=COR_BOTAO, activeforeground="white",
+        relief="flat", bd=0,
+        height=2, width=30,
+        command=comando
+    )
+    btn.pack(pady=8)
+    btn.bind("<Enter>", on_enter)
+    btn.bind("<Leave>", on_leave)
+
+# Botões principais
+criar_botao("Agendar Consulta", "📅", agendar)
+criar_botao("Cancelar Consulta", "❌", cancelar)
+criar_botao("Reagendar Consulta", "🔄", reagendar)
+criar_botao("Minha Agenda", "🗓️", minha_agenda)
+
+root.mainloop()
